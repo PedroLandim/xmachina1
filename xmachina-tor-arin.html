@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XMachina · TOR-ARIN — Sensores Industriais com IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════ */
+:root {
+  --ink:    #07090d;
+  --ink2:   #0d1017;
+  --ink3:   #131820;
+  --border: #1c2230;
+  --border2:#283040;
+  --green:  #00ff88;
+  --green2: #00cc6a;
+  --green-d:#003320;
+  --amber:  #ffaa00;
+  --blue:   #3d8ef0;
+  --text:   #d8dde8;
+  --muted:  #546070;
+  --white:  #f0f4ff;
+  --radius: 4px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:'Barlow',sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;opacity:.4;
+}
+
+/* ── TYPOGRAPHY ── */
+.display {font-family:'Barlow Condensed',sans-serif;}
+.mono    {font-family:'Share Tech Mono',monospace;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:64px;
+  background:rgba(7,9,13,.9);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+}
+.nav-logo{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:22px;font-weight:900;letter-spacing:3px;
+  color:var(--green);
+  text-decoration:none;
+}
+.nav-logo span{color:var(--white)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{
+  font-size:12px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--muted);
+  text-decoration:none;transition:color .2s;
+}
+.nav-links a:hover{color:var(--green)}
+.nav-cta{
+  padding:8px 20px;
+  background:var(--green);color:var(--ink);
+  font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  border:none;cursor:pointer;border-radius:var(--radius);
+  transition:background .2s,transform .15s;
+  text-decoration:none;
+}
+.nav-cta:hover{background:#00ffaa;transform:translateY(-1px)}
+
+/* ── SECTIONS ── */
+section{position:relative}
+.container{max-width:1200px;margin:0 auto;padding:0 48px}
+
+/* ─────────────────────────────────────
+   HERO
+───────────────────────────────────── */
+#hero{
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding-top:64px;
+  background:
+    radial-gradient(ellipse 70% 60% at 60% 50%, rgba(0,255,136,.05) 0%, transparent 70%),
+    linear-gradient(180deg, var(--ink) 0%, var(--ink2) 100%);
+  overflow:hidden;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;align-items:center;
+  width:100%;
+}
+.hero-eyebrow{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:3px;
+  color:var(--green);text-transform:uppercase;
+  margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.hero-eyebrow::before{
+  content:'';display:block;
+  width:24px;height:1px;background:var(--green);
+}
+.hero-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(52px,6vw,88px);
+  font-weight:900;line-height:.95;
+  letter-spacing:-1px;
+  color:var(--white);
+  margin-bottom:28px;
+}
+.hero-title em{
+  font-style:italic;color:var(--green);
+  display:block;
+}
+.hero-desc{
+  font-size:18px;font-weight:300;color:var(--text);
+  line-height:1.7;max-width:480px;
+  margin-bottom:40px;
+}
+.hero-desc strong{color:var(--white);font-weight:600}
+
+.hero-actions{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.btn-primary{
+  padding:14px 32px;
+  background:var(--green);color:var(--ink);
+  font-weight:700;font-size:14px;letter-spacing:.5px;
+  border:none;cursor:pointer;border-radius:var(--radius);
+  transition:all .2s;text-decoration:none;display:inline-block;
+}
+.btn-primary:hover{background:#00ffaa;transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,255,136,.3)}
+.btn-ghost{
+  padding:14px 32px;
+  background:transparent;color:var(--text);
+  font-weight:600;font-size:14px;letter-spacing:.5px;
+  border:1px solid var(--border2);cursor:pointer;border-radius:var(--radius);
+  transition:all .2s;text-decoration:none;display:inline-block;
+}
+.btn-ghost:hover{border-color:var(--green);color:var(--green)}
+
+/* HERO STATS */
+.hero-stats{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;margin-top:48px;
+}
+.stat-cell{
+  background:var(--ink2);
+  padding:24px 20px;
+}
+.stat-num{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:42px;font-weight:900;letter-spacing:-1px;
+  color:var(--green);line-height:1;
+  margin-bottom:4px;
+}
+.stat-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.stat-sub{font-size:12px;color:var(--text);margin-top:4px}
+
+/* HERO VISUAL PANEL */
+.hero-visual{
+  position:relative;
+  display:flex;flex-direction:column;gap:16px;
+}
+.sensor-diagram{
+  background:var(--ink2);
+  border:1px solid var(--border);
+  border-radius:8px;padding:32px;
+  position:relative;overflow:hidden;
+}
+.sensor-diagram::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,255,136,.04) 0%, transparent 70%);
+  pointer-events:none;
+}
+.sensor-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:2px;color:var(--green);
+  text-transform:uppercase;margin-bottom:24px;
+  display:flex;align-items:center;gap:8px;
+}
+.sensor-label::before{content:'●';font-size:7px;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.pipeline{
+  display:flex;align-items:center;gap:0;
+  margin-bottom:24px;
+}
+.pipe-seg{
+  height:48px;background:linear-gradient(90deg,var(--border) 0%,var(--border2) 100%);
+  border-radius:2px;
+}
+.pipe-seg.long{flex:1}
+.pipe-sensor{
+  width:80px;height:80px;
+  background:var(--ink3);
+  border:2px solid var(--green);
+  border-radius:4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;flex-shrink:0;
+  position:relative;
+  box-shadow:0 0 20px rgba(0,255,136,.15);
+}
+.pipe-sensor::before{
+  content:'TOR';
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;color:var(--green);letter-spacing:2px;
+}
+.pipe-sensor-dot{
+  width:12px;height:12px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 8px rgba(0,255,136,.6);
+  animation:pulse-dot 2s infinite;
+}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 8px rgba(0,255,136,.6)}50%{box-shadow:0 0 20px rgba(0,255,136,.9),0 0 40px rgba(0,255,136,.3)}}
+
+/* LIVE DATA STREAM */
+.data-stream{
+  background:var(--ink3);border-radius:6px;
+  padding:16px;font-family:'Share Tech Mono',monospace;
+  font-size:11px;color:var(--green);
+  line-height:1.8;
+  border:1px solid rgba(0,255,136,.12);
+}
+.data-row{display:flex;justify-content:space-between;align-items:center}
+.data-key{color:var(--muted)}
+.data-val{color:var(--green)}
+.data-val.amber{color:var(--amber)}
+.data-val.ok{color:#00ff88}
+
+.readings-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.reading-chip{
+  background:var(--ink3);border:1px solid var(--border);
+  border-radius:4px;padding:10px 12px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.reading-chip-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.reading-chip-val{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:20px;font-weight:700;color:var(--white);
+}
+.reading-chip-unit{font-size:10px;color:var(--muted)}
+
+/* ─────────────────────────────────────
+   CHALLENGE
+───────────────────────────────────── */
+#desafio{
+  padding:120px 0;
+  background:var(--ink2);
+  border-top:1px solid var(--border);
+}
+.section-tag{
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:3px;color:var(--green);
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:16px;
+}
+.section-tag::before{content:'//';color:var(--border2)}
+
+.section-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(36px,4vw,58px);
+  font-weight:800;line-height:1;
+  color:var(--white);letter-spacing:-1px;
+  margin-bottom:16px;
+}
+.section-sub{
+  font-size:18px;font-weight:300;color:var(--muted);
+  max-width:560px;line-height:1.6;
+  margin-bottom:64px;
+}
+
+.problems-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;
+}
+.problem-card{
+  background:var(--ink2);padding:40px 32px;
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.problem-card:hover{background:var(--ink3)}
+.problem-card::before{
+  content:attr(data-num);
+  position:absolute;top:-20px;right:20px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:120px;font-weight:900;
+  color:rgba(255,255,255,.025);
+  line-height:1;
+}
+.problem-icon{
+  width:48px;height:48px;
+  background:rgba(255,80,80,.08);
+  border:1px solid rgba(255,80,80,.2);
+  border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;font-size:22px;
+}
+.problem-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:26px;font-weight:700;color:var(--white);
+  margin-bottom:12px;letter-spacing:-.3px;
+}
+.problem-text{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* ─────────────────────────────────────
+   TECHNOLOGY
+───────────────────────────────────── */
+#tecnologia{
+  padding:120px 0;
+  background:var(--ink);
+}
+.tech-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:48px;align-items:start;
+}
+.tech-card{
+  background:var(--ink2);
+  border:1px solid var(--border);
+  border-radius:8px;padding:40px;
+  position:relative;overflow:hidden;
+}
+.tech-card::after{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:3px;
+}
+.tech-card.tor::after{background:linear-gradient(90deg,var(--green),transparent)}
+.tech-card.arin::after{background:linear-gradient(90deg,var(--blue),transparent)}
+
+.tech-card-tag{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:48px;font-weight:900;letter-spacing:-2px;
+  margin-bottom:4px;line-height:1;
+}
+.tech-card.tor .tech-card-tag{color:var(--green)}
+.tech-card.arin .tech-card-tag{color:var(--blue)}
+.tech-card-subtitle{
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;margin-bottom:28px;
+}
+.tech-specs{display:flex;flex-direction:column;gap:0}
+.spec-row{
+  display:flex;justify-content:space-between;
+  align-items:baseline;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+  gap:16px;
+}
+.spec-row:last-child{border-bottom:none}
+.spec-key{font-size:13px;color:var(--muted);flex-shrink:0}
+.spec-val{
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;color:var(--text);text-align:right;
+}
+
+.plus-connector{
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:80px;font-weight:900;
+  color:var(--border2);padding:20px 0;
+}
+
+/* HOW IT WORKS */
+#como-funciona{
+  padding:120px 0;
+  background:var(--ink2);
+  border-top:1px solid var(--border);
+}
+.steps-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  margin-bottom:64px;
+}
+.step-card{
+  position:relative;
+}
+.step-num{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:80px;font-weight:900;
+  color:rgba(0,255,136,.08);
+  line-height:.9;margin-bottom:-8px;
+  letter-spacing:-2px;
+}
+.step-icon-wrap{
+  width:48px;height:48px;
+  background:var(--green-d);
+  border:1px solid rgba(0,255,136,.3);
+  border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:16px;
+}
+.step-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:20px;font-weight:700;color:var(--white);
+  margin-bottom:8px;
+}
+.step-text{font-size:13px;color:var(--muted);line-height:1.7}
+.step-connector{
+  position:absolute;top:100px;right:-12px;
+  width:24px;height:1px;background:var(--border2);
+  z-index:10;
+}
+.step-card:last-child .step-connector{display:none}
+
+/* PARAMETERS */
+.params-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:8px;overflow:hidden;
+}
+.param-chip{
+  background:var(--ink);
+  padding:16px 14px;
+  display:flex;flex-direction:column;gap:4px;
+  transition:background .2s;
+}
+.param-chip:hover{background:var(--ink3)}
+.param-chip-name{
+  font-size:12px;font-weight:600;color:var(--white);
+}
+.param-chip-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 6px rgba(0,255,136,.5);
+}
+
+/* ─────────────────────────────────────
+   PROOF
+───────────────────────────────────── */
+#comprovado{
+  padding:120px 0;
+  background:var(--ink);
+}
+.proof-top{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  margin-bottom:48px;
+}
+.proof-metric{
+  background:var(--ink2);padding:32px 24px;
+}
+.proof-num{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(36px,3vw,52px);font-weight:900;
+  color:var(--green);line-height:1;margin-bottom:4px;
+}
+.proof-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.proof-desc{font-size:12px;color:var(--text);margin-top:6px;line-height:1.5}
+
+.table-wrap{
+  background:var(--ink2);
+  border:1px solid var(--border);border-radius:8px;overflow:hidden;
+}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--ink3)}
+th{
+  padding:14px 20px;text-align:left;
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+}
+td{
+  padding:14px 20px;font-size:13px;color:var(--text);
+  border-bottom:1px solid var(--border);
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--ink3)}
+.precision{
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;color:var(--green);font-weight:600;
+}
+.validated{
+  display:inline-block;padding:3px 10px;
+  background:rgba(0,255,136,.08);
+  border:1px solid rgba(0,255,136,.2);
+  border-radius:20px;
+  font-size:11px;color:var(--green);
+  font-family:'Share Tech Mono',monospace;
+}
+
+/* ─────────────────────────────────────
+   IMPACT
+───────────────────────────────────── */
+#impacto{
+  padding:120px 0;
+  background:var(--ink2);
+  border-top:1px solid var(--border);
+}
+.impact-top{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;gap:48px;
+  margin-bottom:64px;
+}
+.impact-price{
+  flex-shrink:0;
+  background:var(--ink3);
+  border:1px solid rgba(0,255,136,.3);
+  border-radius:8px;padding:32px 40px;
+  text-align:center;
+}
+.impact-price-num{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:80px;font-weight:900;
+  color:var(--green);line-height:1;
+}
+.impact-price-label{font-size:14px;color:var(--text);margin-top:8px}
+.impact-price-sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+.impact-cards{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:16px;flex:1;
+}
+.impact-card{
+  background:var(--ink3);
+  border:1px solid var(--border);border-radius:8px;
+  padding:28px;
+  display:flex;gap:16px;
+  align-items:flex-start;
+  transition:border-color .2s,transform .2s;
+}
+.impact-card:hover{border-color:rgba(0,255,136,.3);transform:translateY(-2px)}
+.impact-card-icon{
+  font-size:28px;flex-shrink:0;margin-top:4px;
+}
+.impact-card-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:20px;font-weight:700;color:var(--white);
+  margin-bottom:6px;
+}
+.impact-card-text{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* ─────────────────────────────────────
+   APPLICATIONS
+───────────────────────────────────── */
+#aplicacoes{
+  padding:120px 0;
+  background:var(--ink);
+}
+.apps-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+.app-card{
+  background:var(--ink2);
+  border:1px solid var(--border);border-radius:8px;
+  padding:32px;
+  display:flex;flex-direction:column;gap:12px;
+  transition:border-color .25s,transform .25s;
+  cursor:default;
+}
+.app-card:hover{
+  border-color:rgba(0,255,136,.3);
+  transform:translateY(-4px);
+}
+.app-icon{font-size:36px;line-height:1}
+.app-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:24px;font-weight:800;color:var(--white);
+  letter-spacing:-.3px;
+}
+.app-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.app-tag{
+  padding:4px 10px;
+  background:var(--ink3);
+  border:1px solid var(--border);border-radius:20px;
+  font-size:11px;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;
+}
+
+/* ─────────────────────────────────────
+   SPECS
+───────────────────────────────────── */
+#especificacoes{
+  padding:120px 0;
+  background:var(--ink2);
+  border-top:1px solid var(--border);
+}
+.specs-wrapper{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:32px;
+}
+.specs-block{
+  background:var(--ink);
+  border:1px solid var(--border);border-radius:8px;overflow:hidden;
+}
+.specs-block-header{
+  padding:20px 28px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:16px;
+}
+.specs-block-tag{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:32px;font-weight:900;letter-spacing:-1px;
+}
+.specs-block.tor .specs-block-tag{color:var(--green)}
+.specs-block.arin .specs-block-tag{color:var(--blue)}
+.specs-block-name{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.specs-rows{padding:0 28px}
+.spec-line{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 0;border-bottom:1px solid var(--border);
+}
+.spec-line:last-child{border-bottom:none}
+.spec-key{font-size:13px;color:var(--muted)}
+.spec-value{
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;color:var(--text);text-align:right;
+  max-width:60%;
+}
+
+/* ─────────────────────────────────────
+   CTA
+───────────────────────────────────── */
+#cta{
+  padding:120px 48px;
+  background:var(--ink);
+  text-align:center;
+  border-top:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+#cta::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,255,136,.04) 0%, transparent 70%);
+}
+.cta-steps{
+  display:flex;align-items:center;justify-content:center;
+  gap:0;margin-bottom:64px;flex-wrap:wrap;
+}
+.cta-step{
+  display:flex;align-items:center;gap:0;
+}
+.cta-step-inner{
+  background:var(--ink2);
+  border:1px solid var(--border);
+  border-radius:8px;padding:24px 28px;
+  text-align:left;width:200px;
+}
+.cta-step-num{
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:8px;
+}
+.cta-step-text{font-size:14px;font-weight:600;color:var(--white)}
+.cta-arrow{
+  font-size:20px;color:var(--border2);
+  padding:0 8px;
+}
+
+.cta-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(40px,5vw,72px);font-weight:900;
+  color:var(--white);letter-spacing:-1px;line-height:1;
+  margin-bottom:20px;position:relative;
+}
+.cta-title strong{color:var(--green)}
+.cta-sub{
+  font-size:18px;color:var(--muted);font-weight:300;
+  max-width:560px;margin:0 auto 40px;
+  line-height:1.6;
+}
+.cta-contact{
+  display:flex;align-items:center;justify-content:center;
+  gap:24px;flex-wrap:wrap;
+  margin-top:48px;
+}
+.contact-item{
+  display:flex;align-items:center;gap:10px;
+  font-size:14px;color:var(--muted);
+}
+.contact-item a{
+  color:var(--green);text-decoration:none;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+}
+.contact-item a:hover{color:#00ffaa}
+
+/* ─────────────────────────────────────
+   FOOTER
+───────────────────────────────────── */
+footer{
+  padding:32px 48px;
+  background:var(--ink2);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;
+}
+.footer-logo{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:18px;font-weight:900;letter-spacing:3px;color:var(--green);
+}
+.footer-logo span{color:var(--muted)}
+.footer-tagline{font-size:12px;color:var(--muted);font-family:'Share Tech Mono',monospace}
+
+/* ─────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────── */
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+.reveal.visible{opacity:1;transform:none}
+
+/* ─────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────── */
+@media(max-width:960px){
+  nav{padding:0 24px}
+  .nav-links{display:none}
+  .container{padding:0 24px}
+  .hero-grid,.tech-grid,.specs-wrapper{grid-template-columns:1fr}
+  .problems-grid,.steps-grid,.apps-grid{grid-template-columns:1fr 1fr}
+  .params-grid{grid-template-columns:repeat(3,1fr)}
+  .proof-top{grid-template-columns:1fr 1fr}
+  .impact-top{flex-direction:column}
+  .cta-steps{gap:4px}
+  footer{flex-direction:column;text-align:center}
+}
+@media(max-width:600px){
+  .problems-grid,.steps-grid,.apps-grid,.impact-cards{grid-template-columns:1fr}
+  .params-grid{grid-template-columns:repeat(2,1fr)}
+  .proof-top{grid-template-columns:1fr}
+  .hero-stats{grid-template-columns:1fr 1fr}
+  #cta{padding:80px 24px}
+  .cta-steps{flex-direction:column;align-items:stretch}
+  .cta-step-inner{width:100%}
+  .cta-arrow{transform:rotate(90deg)}
+}
+
+/* ─────────────────────────────────────
+   LIVE DATA ANIMATION
+───────────────────────────────────── */
+@keyframes dataUpdate{
+  0%{opacity:.3;transform:translateX(-4px)}
+  100%{opacity:1;transform:none}
+}
+.data-val.updating{animation:dataUpdate .3s ease}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────── -->
+<nav>
+  <a class="nav-logo" href="#hero">XMACHINA<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#desafio">O Desafio</a></li>
+    <li><a href="#tecnologia">Tecnologia</a></li>
+    <li><a href="#comprovado">Resultados</a></li>
+    <li><a href="#aplicacoes">Aplicações</a></li>
+    <li><a href="#especificacoes">Specs</a></li>
+  </ul>
+  <a class="nav-cta" href="#cta">Falar com a Gente</a>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+
+      <!-- LEFT -->
+      <div>
+        <div class="hero-eyebrow">TOR-ARIN · SOLUÇÃO 4.0</div>
+        <h1 class="hero-title">
+          Sua produção<br>
+          <em>nunca mais</em><br>
+          no escuro.
+        </h1>
+        <p class="hero-desc">
+          <strong>16 características simultâneas. 30 diagnósticos por segundo.</strong><br>
+          Monitoramento óptico contínuo com Inteligência Artificial — em tempo real, direto na tubulação.
+        </p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="#cta">Solicitar Piloto</a>
+          <a class="btn-ghost" href="#tecnologia">Ver a Tecnologia</a>
+        </div>
+
+        <div class="hero-stats reveal">
+          <div class="stat-cell">
+            <div class="stat-num">99%</div>
+            <div class="stat-label">Precisão</div>
+            <div class="stat-sub">ETA Saneamento validado</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">30×</div>
+            <div class="stat-label">Diagnósticos/segundo</div>
+            <div class="stat-sub">Inteligência em tempo real</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">16</div>
+            <div class="stat-label">Parâmetros</div>
+            <div class="stat-sub">Monitorados simultaneamente</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">5×</div>
+            <div class="stat-label">Mais barato</div>
+            <div class="stat-sub">Que soluções ópticas equiv.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: LIVE VISUAL -->
+      <div class="hero-visual reveal">
+        <div class="sensor-diagram">
+          <div class="sensor-label">MONITORAMENTO ATIVO — TEMPO REAL</div>
+          <div class="pipeline">
+            <div class="pipe-seg long"></div>
+            <div class="pipe-sensor">
+              <div class="pipe-sensor-dot"></div>
+            </div>
+            <div class="pipe-seg long"></div>
+          </div>
+          <div class="data-stream" id="liveData">
+            <div class="data-row"><span class="data-key">pH</span><span class="data-val ok" id="dph">7.42</span></div>
+            <div class="data-row"><span class="data-key">Turbidez (NTU)</span><span class="data-val ok" id="dturb">0.18</span></div>
+            <div class="data-row"><span class="data-key">Cloro residual</span><span class="data-val ok" id="dcloro">0.84 mg/L</span></div>
+            <div class="data-row"><span class="data-key">Cor aparente</span><span class="data-val ok" id="dcor">2.1 uH</span></div>
+            <div class="data-row"><span class="data-key">Temperatura</span><span class="data-val" id="dtemp">23.4°C</span></div>
+            <div class="data-row"><span class="data-key">Diagnósticos/s</span><span class="data-val ok" id="ddiag">30</span></div>
+            <div class="data-row"><span class="data-key">STATUS</span><span class="data-val ok">● NOMINAL</span></div>
+          </div>
+        </div>
+
+        <div class="readings-grid">
+          <div class="reading-chip">
+            <span class="reading-chip-label">Salinidade</span>
+            <span class="reading-chip-val" id="rsal">0.12</span>
+            <span class="reading-chip-unit">ppt</span>
+          </div>
+          <div class="reading-chip">
+            <span class="reading-chip-label">Ferro</span>
+            <span class="reading-chip-val" id="rfe">0.04</span>
+            <span class="reading-chip-unit">mg/L</span>
+          </div>
+          <div class="reading-chip">
+            <span class="reading-chip-label">Alumínio</span>
+            <span class="reading-chip-val" id="ral">0.07</span>
+            <span class="reading-chip-unit">mg/L</span>
+          </div>
+          <div class="reading-chip">
+            <span class="reading-chip-label">Fluoreto</span>
+            <span class="reading-chip-val" id="rflu">0.71</span>
+            <span class="reading-chip-unit">mg/L</span>
+          </div>
+          <div class="reading-chip">
+            <span class="reading-chip-label">Particulados</span>
+            <span class="reading-chip-val" id="rpart">3</span>
+            <span class="reading-chip-unit">ppm</span>
+          </div>
+          <div class="reading-chip">
+            <span class="reading-chip-label">Vazão</span>
+            <span class="reading-chip-val" id="rvaz">1.8</span>
+            <span class="reading-chip-unit">m³/h</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     DESAFIO
+═══════════════════════════════════════ -->
+<section id="desafio">
+  <div class="container">
+    <div class="section-tag">O Desafio</div>
+    <h2 class="section-title">Sua produção está<br>navegando no escuro.</h2>
+    <p class="section-sub">Três problemas que custam caro — e que persistem porque ninguém os vê.</p>
+
+    <div class="problems-grid reveal">
+      <div class="problem-card" data-num="01">
+        <div class="problem-icon">⏱</div>
+        <div class="problem-title">Liberação Tardia</div>
+        <p class="problem-text">Sem saber o momento exato do fim de cada fase, equipamentos ficam parados. Menos produção, mais custo.</p>
+      </div>
+      <div class="problem-card" data-num="02">
+        <div class="problem-icon">⚠</div>
+        <div class="problem-title">Desvios Invisíveis</div>
+        <p class="problem-text">Análises laboratoriais levam horas. Quando o resultado chega, o lote já foi comprometido — ou descartado.</p>
+      </div>
+      <div class="problem-card" data-num="03">
+        <div class="problem-icon">🔀</div>
+        <div class="problem-title">Visão Fragmentada</div>
+        <p class="problem-text">Múltiplos sensores desconexos, dados incompletos, decisões baseadas em intuição. Qualidade inconsistente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     TECNOLOGIA
+═══════════════════════════════════════ -->
+<section id="tecnologia">
+  <div class="container">
+    <div class="section-tag">A Tecnologia</div>
+    <h2 class="section-title">Um sensor. Duas tecnologias.<br>Decisões em tempo real.</h2>
+
+    <div class="tech-grid reveal">
+      <div class="tech-card tor">
+        <div class="tech-card-tag">TOR</div>
+        <div class="tech-card-subtitle">Transdutor Óptico por Refração</div>
+        <div class="tech-specs">
+          <div class="spec-row"><span class="spec-key">Instalação</span><span class="spec-val">Em linha — tubulação 1"</span></div>
+          <div class="spec-row"><span class="spec-key">Material</span><span class="spec-val">Aço Inox 316L + Borossilicato + Viton</span></div>
+          <div class="spec-row"><span class="spec-key">Câmera</span><span class="spec-val">CCD 960×480 — 30 fps</span></div>
+          <div class="spec-row"><span class="spec-key">Compatibilidade</span><span class="spec-val">CIP/SIP — 180 psi / 150°C</span></div>
+          <div class="spec-row"><span class="spec-key">Conectividade</span><span class="spec-val">Wi-Fi · Serial · Modbus RTU/TCP · 4-20mA</span></div>
+        </div>
+      </div>
+
+      <div class="tech-card arin">
+        <div class="tech-card-tag">ARIN</div>
+        <div class="tech-card-subtitle">Engine de Inteligência Artificial</div>
+        <div class="tech-specs">
+          <div class="spec-row"><span class="spec-key">Tecnologia</span><span class="spec-val">Rede neural proprietária — Neurologs</span></div>
+          <div class="spec-row"><span class="spec-key">Velocidade</span><span class="spec-val">30 diagnósticos/segundo em tempo real</span></div>
+          <div class="spec-row"><span class="spec-key">Unidades neurais</span><span class="spec-val">~10.000 neurounidades por instância</span></div>
+          <div class="spec-row"><span class="spec-key">Localização</span><span class="spec-val">Hardware dedicado ou Nuvem</span></div>
+          <div class="spec-row"><span class="spec-key">Dashboard</span><span class="spec-val">Windows · macOS · Web</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     COMO FUNCIONA
+═══════════════════════════════════════ -->
+<section id="como-funciona">
+  <div class="container">
+    <div class="section-tag">Como Funciona</div>
+    <h2 class="section-title">Impressão digital óptica.<br>Tempo real.</h2>
+    <p class="section-sub" style="margin-bottom:48px">Da tubulação ao diagnóstico em 1/30 de segundo.</p>
+
+    <div class="steps-grid reveal">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-icon-wrap">💡</div>
+        <div class="step-title">Feixe de Luz</div>
+        <p class="step-text">Um feixe de luz atravessa o fluido em fluxo contínuo na tubulação instalada.</p>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-icon-wrap">📷</div>
+        <div class="step-title">TOR Captura</div>
+        <p class="step-text">O sensor registra refração e difração em 30 fps — cada fluido tem uma assinatura única.</p>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-icon-wrap">🧠</div>
+        <div class="step-title">ARIN Processa</div>
+        <p class="step-text">A rede neural processa a impressão óptica e identifica padrões em milissegundos.</p>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-icon-wrap">📊</div>
+        <div class="step-title">Dashboard Exibe</div>
+        <p class="step-text">O diagnóstico aparece no painel em menos de 33ms — 16 parâmetros simultâneos.</p>
+      </div>
+    </div>
+
+    <div class="section-tag" style="margin-bottom:20px">O que o TOR detecta simultaneamente</div>
+    <div class="params-grid reveal">
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">pH</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Turbidez</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Cloro residual</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Ferro / Manganês</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Cor aparente</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Fluoreto</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Densidade óptica</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Temperatura</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Particulados</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Alumínio</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Vazão</div></div>
+      <div class="param-chip"><div class="param-chip-dot"></div><div class="param-chip-name">Salinidade</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     COMPROVADO EM CAMPO
+═══════════════════════════════════════ -->
+<section id="comprovado">
+  <div class="container">
+    <div class="section-tag">Comprovado em Campo</div>
+    <h2 class="section-title">Não é protótipo. É industrial.</h2>
+    <p class="section-sub">Validado em múltiplas indústrias, fluidos distintos, condições reais de operação.</p>
+
+    <div class="proof-top reveal">
+      <div class="proof-metric">
+        <div class="proof-num">98,85%</div>
+        <div class="proof-label">a 99,16%</div>
+        <div class="proof-desc">Precisão — ETA Saneamento</div>
+      </div>
+      <div class="proof-metric">
+        <div class="proof-num">4.500</div>
+        <div class="proof-label">Amostras</div>
+        <div class="proof-desc">Base de validação laboratorial</div>
+      </div>
+      <div class="proof-metric">
+        <div class="proof-num">3.264h</div>
+        <div class="proof-label">de Vídeo</div>
+        <div class="proof-desc">Monitoramento contínuo registrado</div>
+      </div>
+      <div class="proof-metric">
+        <div class="proof-num">23</div>
+        <div class="proof-label">Características</div>
+        <div class="proof-desc">Monitoradas em simultâneo (máx.)</div>
+      </div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente / Segmento</th>
+            <th>Fluido Monitorado</th>
+            <th>Amostras</th>
+            <th>Precisão</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ETA — Saneamento</strong></td>
+            <td>Água de tratamento</td>
+            <td>4.500</td>
+            <td><span class="precision">98,85% – 99,16%</span></td>
+          </tr>
+          <tr>
+            <td><strong>Xaroparia — Beverage</strong></td>
+            <td>Xarope simples</td>
+            <td>180</td>
+            <td><span class="precision">91,92% – 95,07%</span></td>
+          </tr>
+          <tr>
+            <td><strong>Sulfatação — Químico</strong></td>
+            <td>Processo de sulfatação</td>
+            <td>150</td>
+            <td><span class="precision">92,15% – 95,10%</span></td>
+          </tr>
+          <tr>
+            <td><strong>ETA — Refrigerante</strong></td>
+            <td>Água de tratamento</td>
+            <td>200</td>
+            <td><span class="validated">Validado</span></td>
+          </tr>
+          <tr>
+            <td><strong>Combustíveis</strong></td>
+            <td>Combustíveis (7 tipos)</td>
+            <td>350</td>
+            <td><span class="validated">Validado</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     IMPACTO
+═══════════════════════════════════════ -->
+<section id="impacto">
+  <div class="container">
+    <div class="section-tag">Impacto no Negócio</div>
+    <h2 class="section-title">Resultados que aparecem<br>no balanço.</h2>
+
+    <div class="impact-top reveal">
+      <div class="impact-price">
+        <div class="impact-price-num">5×</div>
+        <div class="impact-price-label">mais barato</div>
+        <div class="impact-price-sub">que soluções ópticas equivalentes</div>
+      </div>
+      <div class="impact-cards">
+        <div class="impact-card">
+          <div class="impact-card-icon">📉</div>
+          <div>
+            <div class="impact-card-title">Menos Perdas e Retrabalho</div>
+            <p class="impact-card-text">Desvios detectados em segundos — não horas. Menos lotes descartados, menos matéria-prima desperdiçada, mais margem por unidade produzida.</p>
+          </div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-card-icon">⚡</div>
+          <div>
+            <div class="impact-card-title">Ciclos Mais Curtos</div>
+            <p class="impact-card-text">Fases monitoradas com precisão: saiba o momento exato de cada transição. Mais bateladas por mês, mais receita, mesma estrutura.</p>
+          </div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-card-icon">✅</div>
+          <div>
+            <div class="impact-card-title">Qualidade Rastreável</div>
+            <p class="impact-card-text">Histórico contínuo de cada parâmetro. Conformidade documentada, auditorias simplificadas, certificações facilitadas.</p>
+          </div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-card-icon">🔬</div>
+          <div>
+            <div class="impact-card-title">P&D Acelerado</div>
+            <p class="impact-card-text">Novos produtos documentados com rigor científico. Inove com segurança, escale com confiança — a IA guarda cada receita vencedora.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     APLICAÇÕES
+═══════════════════════════════════════ -->
+<section id="aplicacoes">
+  <div class="container">
+    <div class="section-tag">Aplicações</div>
+    <h2 class="section-title">Um sensor. Múltiplas indústrias.</h2>
+    <p class="section-sub">Se o fluido precisa de controle de qualidade, o TOR-ARIN resolve.</p>
+
+    <div class="apps-grid reveal">
+      <div class="app-card">
+        <div class="app-icon">💧</div>
+        <div class="app-name">Saneamento</div>
+        <div class="app-tags">
+          <span class="app-tag">ETA</span>
+          <span class="app-tag">Distribuição</span>
+          <span class="app-tag">Qualidade hídrica</span>
+        </div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">⚗️</div>
+        <div class="app-name">Química & Petroquímica</div>
+        <div class="app-tags">
+          <span class="app-tag">Sulfatação</span>
+          <span class="app-tag">Solventes</span>
+          <span class="app-tag">Óleos</span>
+        </div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">⛽</div>
+        <div class="app-name">Combustíveis</div>
+        <div class="app-tags">
+          <span class="app-tag">Etanol</span>
+          <span class="app-tag">Gasolina</span>
+          <span class="app-tag">Diesel</span>
+          <span class="app-tag">Biodiesel</span>
+        </div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">🍺</div>
+        <div class="app-name">Bebidas & Alimentos</div>
+        <div class="app-tags">
+          <span class="app-tag">Xaropes</span>
+          <span class="app-tag">Cervejas</span>
+          <span class="app-tag">Laticínios</span>
+        </div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">⚙️</div>
+        <div class="app-name">Metal-mecânico</div>
+        <div class="app-tags">
+          <span class="app-tag">Óleos de corte</span>
+          <span class="app-tag">Fluidos hidráulicos</span>
+        </div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">🌿</div>
+        <div class="app-name">Meio Ambiente</div>
+        <div class="app-tags">
+          <span class="app-tag">Efluentes</span>
+          <span class="app-tag">Monitoramento ambiental</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     ESPECIFICAÇÕES
+═══════════════════════════════════════ -->
+<section id="especificacoes">
+  <div class="container">
+    <div class="section-tag">Especificações</div>
+    <h2 class="section-title">Engenharia de precisão.</h2>
+
+    <div class="specs-wrapper reveal">
+      <div class="specs-block tor">
+        <div class="specs-block-header">
+          <div class="specs-block-tag">TOR</div>
+          <div class="specs-block-name">Sensor Óptico</div>
+        </div>
+        <div class="specs-rows">
+          <div class="spec-line"><span class="spec-key">Diâmetro da tubulação</span><span class="spec-value">1" (polegada)</span></div>
+          <div class="spec-line"><span class="spec-key">Material</span><span class="spec-value">Aço Inox 316L</span></div>
+          <div class="spec-line"><span class="spec-key">Janela óptica</span><span class="spec-value">Vidro borossilicato</span></div>
+          <div class="spec-line"><span class="spec-key">Vedação</span><span class="spec-value">Viton — CIP/SIP compatível</span></div>
+          <div class="spec-line"><span class="spec-key">Voltagem</span><span class="spec-value">DC 12V</span></div>
+          <div class="spec-line"><span class="spec-key">Pressão máxima</span><span class="spec-value">180 psi</span></div>
+          <div class="spec-line"><span class="spec-key">Temperatura máxima</span><span class="spec-value">150°C</span></div>
+          <div class="spec-line"><span class="spec-key">Câmera</span><span class="spec-value">CCD 960×480 — 30 fps</span></div>
+          <div class="spec-line"><span class="spec-key">Conectividade</span><span class="spec-value">Wi-Fi / Serial / Modbus / 4-20mA</span></div>
+          <div class="spec-line"><span class="spec-key">Integração remota</span><span class="spec-value">Via modem 5G</span></div>
+        </div>
+      </div>
+
+      <div class="specs-block arin">
+        <div class="specs-block-header">
+          <div class="specs-block-tag">ARIN</div>
+          <div class="specs-block-name">Engine de Inteligência Artificial</div>
+        </div>
+        <div class="specs-rows">
+          <div class="spec-line"><span class="spec-key">Tecnologia subjacente</span><span class="spec-value">Rede neural — Neurologs</span></div>
+          <div class="spec-line"><span class="spec-key">Velocidade</span><span class="spec-value">30 diagnósticos/segundo</span></div>
+          <div class="spec-line"><span class="spec-key">Diagnóstico replay</span><span class="spec-value">1.000 diagnósticos/segundo</span></div>
+          <div class="spec-line"><span class="spec-key">Unidades neurais</span><span class="spec-value">~10.000 por instância</span></div>
+          <div class="spec-line"><span class="spec-key">Padrões (hardware)</span><span class="spec-value">Até 40 padrões (i7)</span></div>
+          <div class="spec-line"><span class="spec-key">Padrões (nuvem)</span><span class="spec-value">Ilimitados</span></div>
+          <div class="spec-line"><span class="spec-key">Localização</span><span class="spec-value">Hardware dedicado ou Nuvem</span></div>
+          <div class="spec-line"><span class="spec-key">Interface</span><span class="spec-value">Windows / macOS / Web</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     CTA — PRÓXIMOS PASSOS
+═══════════════════════════════════════ -->
+<section id="cta">
+  <div style="position:relative;z-index:2">
+    <div class="section-tag" style="justify-content:center">Próximos Passos</div>
+    <h2 class="cta-title">
+      Conquiste clientes levando meses.<br>
+      <strong>Não os perca num único lote.</strong>
+    </h2>
+    <p class="cta-sub">O TOR-ARIN não é um custo. É o seu sistema de defesa — e a vantagem competitiva que a concorrência não tem.</p>
+
+    <div class="cta-steps reveal">
+      <div class="cta-step">
+        <div class="cta-step-inner">
+          <div class="cta-step-num">PASSO 01</div>
+          <div class="cta-step-text">Aprovação da proposta</div>
+        </div>
+        <div class="cta-arrow">→</div>
+      </div>
+      <div class="cta-step">
+        <div class="cta-step-inner">
+          <div class="cta-step-num">PASSO 02</div>
+          <div class="cta-step-text">Planejamento do Setup e Capacitação</div>
+        </div>
+        <div class="cta-arrow">→</div>
+      </div>
+      <div class="cta-step">
+        <div class="cta-step-inner">
+          <div class="cta-step-num">PASSO 03</div>
+          <div class="cta-step-text">Entrega do TOR-ARIN</div>
+        </div>
+        <div class="cta-arrow">→</div>
+      </div>
+      <div class="cta-step">
+        <div class="cta-step-inner">
+          <div class="cta-step-num">PASSO 04</div>
+          <div class="cta-step-text">Piloto em 30 dias</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:40px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <a class="btn-primary" href="mailto:sande@xmachina.com.br">Fale com Eduardo Sande — CEO</a>
+      <a class="btn-ghost" href="https://www.xmachina.com.br" target="_blank">www.xmachina.com.br</a>
+    </div>
+
+    <div class="cta-contact">
+      <div class="contact-item">
+        <span>✉</span>
+        <a href="mailto:sande@xmachina.com.br">sande@xmachina.com.br</a>
+      </div>
+      <div class="contact-item">
+        <span>🌐</span>
+        <a href="https://www.xmachina.com.br" target="_blank">www.xmachina.com.br</a>
+      </div>
+      <div class="contact-item">
+        <span>👤</span>
+        <span>Eduardo Sande — CEO · XMachina · Sensores Industriais com IA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ───────────────────────────── -->
+<footer>
+  <div class="footer-logo">XMACHINA<span> · TOR-ARIN</span></div>
+  <div class="footer-tagline">Sensores Industriais com Inteligência Artificial · © 2026</div>
+  <div style="font-size:11px;color:var(--muted);font-family:'Share Tech Mono',monospace">
+    Solução 4.0 · Monitoramento em Tempo Real
+  </div>
+</footer>
+
+<!-- ── SCRIPTS ───────────────────────────── -->
+<script>
+// ── SCROLL REVEAL ──
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+revealEls.forEach(el => observer.observe(el));
+
+// ── LIVE DATA SIMULATION ──
+const readings = {
+  dph:   { min: 7.15, max: 7.68, dec: 2 },
+  dturb: { min: 0.08, max: 0.42, dec: 2 },
+  dcloro:{ min: 0.60, max: 1.20, dec: 2, unit: ' mg/L' },
+  dcor:  { min: 1.2,  max: 4.8,  dec: 1, unit: ' uH' },
+  dtemp: { min: 21.0, max: 26.5, dec: 1, unit: '°C' },
+  rsal:  { min: 0.08, max: 0.24, dec: 2 },
+  rfe:   { min: 0.01, max: 0.12, dec: 2 },
+  ral:   { min: 0.03, max: 0.18, dec: 2 },
+  rflu:  { min: 0.50, max: 0.95, dec: 2 },
+  rpart: { min: 1,    max: 8,    dec: 0 },
+  rvaz:  { min: 1.2,  max: 2.6,  dec: 1 },
+};
+
+let diagCount = 0;
+function randVal(r) {
+  return (Math.random() * (r.max - r.min) + r.min).toFixed(r.dec);
+}
+
+function updateLive() {
+  Object.entries(readings).forEach(([id, cfg]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const newVal = randVal(cfg);
+    el.textContent = newVal + (cfg.unit || '');
+    el.classList.remove('updating');
+    void el.offsetWidth;
+    el.classList.add('updating');
+  });
+  diagCount = (diagCount + 1) % 3;
+}
+
+// stagger updates for realism
+setInterval(() => {
+  // update 2-3 values at random
+  const keys = Object.keys(readings);
+  const shuffled = keys.sort(() => Math.random() - .5).slice(0, 3);
+  shuffled.forEach(id => {
+    const cfg = readings[id];
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = randVal(cfg) + (cfg.unit || '');
+    el.classList.remove('updating');
+    void el.offsetWidth;
+    el.classList.add('updating');
+  });
+}, 1200);
+
+// ── NAV ACTIVE STATE ──
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--green)' : '';
+  });
+}, { passive: true });
+
+// ── SMOOTH NAV BG ──
+window.addEventListener('scroll', () => {
+  document.querySelector('nav').style.background =
+    window.scrollY > 40 ? 'rgba(7,9,13,.97)' : 'rgba(7,9,13,.9)';
+}, { passive: true });
+</script>
+</body>
+</html>
